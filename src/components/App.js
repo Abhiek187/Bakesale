@@ -20,7 +20,12 @@ export default function App() {
 		deals.find(deal => deal.key === currentDealId);
 
 	if (currentDealId) {
-		return <DealDetail initialDealData={currentDeal()} />;
+		return (
+			<DealDetail
+				initialDealData={currentDeal()}
+				onBack={setCurrentDealId}
+			/>
+		);
 	} else if (deals.length > 0) {
 		return <DealList deals={deals} onItemPress={setCurrentDealId} />;
 	} else {

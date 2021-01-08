@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { priceDisplay } from "../util";
 import ajax from "../ajax";
 
-export default function DealDetail({ initialDealData }) {
+export default function DealDetail({ initialDealData, onBack }) {
 	/* Full deal contains:
 	 * availableQuantity: number,
 	 * cause: {name: string},
@@ -33,8 +33,15 @@ export default function DealDetail({ initialDealData }) {
 		})();
 	}, []);
 
+	const handlePress = () => {
+		onBack(null); // set the current deal ID to null to go back to the deals list
+	};
+
 	return (
 		<View style={styles.deal}>
+			<TouchableOpacity onPress={handlePress}>
+				<Text style={styles.backLink}>Back</Text>
+			</TouchableOpacity>
 			<Image source={{ uri: deal.media[0] }} style={styles.image} />
 			<View style={styles.detail}>
 				<View>
@@ -63,15 +70,19 @@ export default function DealDetail({ initialDealData }) {
 }
 
 DealDetail.propTypes = {
-	initialDealData: PropTypes.object.isRequired
+	initialDealData: PropTypes.object.isRequired,
+	onBack: PropTypes.func.isRequired
 };
 
 const styles = StyleSheet.create({
 	deal: {
 		marginHorizontal: 12,
-		marginTop: 50,
-		borderColor: "#bbb",
-		borderWidth: 1
+		marginTop: 50
+	},
+
+	backLink: {
+		marginBottom: 5,
+		color: "#22f"
 	},
 
 	image: {
@@ -80,7 +91,10 @@ const styles = StyleSheet.create({
 		backgroundColor: "#ccc"
 	},
 
-	detail: {},
+	detail: {
+		borderColor: "#bbb",
+		borderWidth: 1
+	},
 
 	title: {
 		fontSize: 16,
