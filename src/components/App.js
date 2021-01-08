@@ -1,12 +1,13 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import ajax from "../ajax";
 import DealList from "./DealList";
+import DealDetail from "./DealDetail";
 
 export default function App() {
 	const [deals, setDeals] = useState([]);
+	const [currentDealId, setCurrentDealId] = useState(null);
 
 	useEffect(() => {
 		(async () => {
@@ -15,16 +16,16 @@ export default function App() {
 		})();
 	}, []);
 
-	return (
-		<View style={styles.container}>
-			{deals.length > 0 ? (
-				<DealList deals={deals} />
-			) : (
-				<Text style={styles.header}>Bakesale</Text>
-			)}
-			<StatusBar style="auto" />
-		</View>
-	);
+	const currentDeal = () =>
+		deals.find(deal => deal.key === currentDealId);
+
+	if (currentDealId) {
+		return <DealDetail initialDealData={currentDeal()} />;
+	} else if (deals.length > 0) {
+		return <DealList deals={deals} onItemPress={setCurrentDealId} />;
+	} else {
+		return <Text style={styles.header}>Bakesale</Text>;
+	}
 }
 
 const styles = StyleSheet.create({

@@ -1,27 +1,23 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 
-export default function DealList({ deals }) {
-	/* Deals contain:
-	 * cause: {name: },
-	 * key: string,
-	 * media: [string],
-	 * price: number,
-	 * title: string
-	 */
+import DealItem from "./DealItem";
+
+export default function DealList({ deals, onItemPress }) {
 	return (
 		<View style={styles.list}>
 			<FlatList
 				data={deals}
-				renderItem={({item}) => <Text>{item.title}</Text>}
+				renderItem={({item}) => <DealItem deal={item} onPress={onItemPress} />}
 			/>
 		</View>
 	);
 }
 
 DealList.propTypes = {
-	deals: PropTypes.array.isRequired
+	deals: PropTypes.array.isRequired,
+	onItemPress: PropTypes.func.isRequired
 };
 
 const styles = StyleSheet.create({
