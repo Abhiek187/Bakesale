@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Bakesale",
+    "entryPoint": "index.js",
     "slug": "Bakesale",
     "version": "1.0.0",
     "orientation": "portrait",
