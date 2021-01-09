@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+	Animated,
+	Dimensions,
+	Image,
+	PanResponder,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View
+} from "react-native";
 
 import { priceDisplay } from "../util";
 import ajax from "../ajax";
@@ -23,8 +32,54 @@ export default function DealDetail({ initialDealData, onBack }) {
 	 * url: string,
 	 * user: {avatar: string, name: string}
 	 */
-
 	const [deal, setDeal] = useState(initialDealData);
+	const [imageIndex, setImageIndex] = useState(0);
+	const imageXPos = useRef(new Animated.Value(0)).current;
+	const width = useRef(Dimensions.get("window").width).current;
+	const imageDirection = useRef(1);
+
+	const handleSwipe = indexDirection => {
+		if (!deal.media[imageIndex + indexDirection]) {
+			// No more images to swipe through
+			Animated.spring(imageXPos, {
+				toValue: 0
+			}).start();
+			return;
+		}
+
+		imageDirection.current = indexDirection;
+		setImageIndex(imageIndex + indexDirection);
+	};
+
+	const imagePanResponder = PanResponder.create({
+		// Make the pan responder active
+		onStartShouldSetPanResponder: () => true,
+		// Detect gesture movement (evt = event, gs = gesture state)
+		onPanResponderMove: (evt, gs) => {
+			// Set the x position of the image to the distance traveled by the gesture
+			imageXPos.setValue(gs.dx);
+		},
+		// When the finger is released
+		onPanResponderRelease: (evt, gs) => {
+			if (Math.abs(gs.dx) > 0.4 * width) {
+				// Swipe the image left or right
+				const direction = Math.sign(gs.dx); // -1 or 1
+
+				Animated.timing(imageXPos, {
+					toValue: direction * width,
+					duration: 250
+				}).start(() => {
+					// Move the image back or place a new image in the opposite direction of the swipe
+					handleSwipe(-1 * direction);
+				});
+			} else {
+				// The image didn't move far enough, so put it back in its original position
+				Animated.spring(imageXPos, {
+					toValue: 0
+				}).start();
+			}
+		}
+	});
 
 	useEffect(() => {
 		(async () => {
@@ -32,6 +87,14 @@ export default function DealDetail({ initialDealData, onBack }) {
 			setDeal(fullDeal);
 		})();
 	}, []);
+
+	useEffect(() => {
+		// Next image animation
+		imageXPos.setValue(imageDirection.current * width);
+		Animated.spring(imageXPos, {
+			toValue: 0
+		}).start();
+	}, [imageIndex]);
 
 	const handlePress = () => {
 		onBack(null); // set the current deal ID to null to go back to the deals list
@@ -42,7 +105,11 @@ export default function DealDetail({ initialDealData, onBack }) {
 			<TouchableOpacity onPress={handlePress}>
 				<Text style={styles.backLink}>Back</Text>
 			</TouchableOpacity>
-			<Image source={{ uri: deal.media[0] }} style={styles.image} />
+			<Animated.Image
+				{...imagePanResponder.panHandlers}
+				source={{ uri: deal.media[imageIndex] }}
+				style={[styles.image, { left: imageXPos }]}
+			/>
 			<View style={styles.detail}>
 				<View>
 					<Text style={styles.title}>{deal.title}</Text>
