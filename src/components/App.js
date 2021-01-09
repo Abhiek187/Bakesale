@@ -4,9 +4,11 @@ import { StyleSheet, Text, View } from "react-native";
 import ajax from "../ajax";
 import DealList from "./DealList";
 import DealDetail from "./DealDetail";
+import SearchBar from "./SearchBar";
 
 export default function App() {
 	const [deals, setDeals] = useState([]);
+	const [dealsFromSearch, setDealsFromSearch] = useState([]);
 	const [currentDealId, setCurrentDealId] = useState(null);
 
 	useEffect(() => {
@@ -16,18 +18,41 @@ export default function App() {
 		})();
 	}, []);
 
+	const searchDeals = async searchTerm => {
+		// Default if the search bar is empty
+		let fetchedDealsFromSearch = [];
+
+		if (searchTerm) {
+			fetchedDealsFromSearch = await ajax.fetchDealsSearchResults(searchTerm);
+		}
+
+		setDealsFromSearch(fetchedDealsFromSearch);
+	};
+
 	const currentDeal = () =>
 		deals.find(deal => deal.key === currentDealId);
 
+	// If not searching for anything, display all the deals
+	const dealsToDisplay = dealsFromSearch.length > 0
+		? dealsFromSearch
+		: deals;
+
 	if (currentDealId) {
 		return (
-			<DealDetail
-				initialDealData={currentDeal()}
-				onBack={setCurrentDealId}
-			/>
+			<View style={styles.main}>
+				<DealDetail
+					initialDealData={currentDeal()}
+					onBack={setCurrentDealId}
+				/>
+			</View>
 		);
-	} else if (deals.length > 0) {
-		return <DealList deals={deals} onItemPress={setCurrentDealId} />;
+	} else if (dealsToDisplay.length > 0) {
+		return (
+			<View style={styles.main}>
+				<SearchBar searchDeals={searchDeals} />
+				<DealList deals={dealsToDisplay} onItemPress={setCurrentDealId} />
+			</View>
+		);
 	} else {
 		return <Text style={styles.header}>Bakesale</Text>;
 	}
@@ -39,6 +64,10 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fff',
 		alignItems: 'center',
 		justifyContent: 'center'
+	},
+
+	main: {
+		marginTop: 30
 	},
 
 	header: {

@@ -23,8 +23,6 @@ DealList.propTypes = {
 const styles = StyleSheet.create({
 	list: {
 		backgroundColor: "#eee",
-		flex: 1,
-		width: "100%",
-		paddingTop: 50
+		width: "100%"
 	}
 });

@@ -76,8 +76,7 @@ DealDetail.propTypes = {
 
 const styles = StyleSheet.create({
 	deal: {
-		marginHorizontal: 12,
-		marginTop: 50
+		marginHorizontal: 12
 	},
 
 	backLink: {
