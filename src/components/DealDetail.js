@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import {
 	Animated,
+	Button,
 	Dimensions,
 	Image,
+	Linking,
 	PanResponder,
 	StyleSheet,
 	Text,
@@ -100,6 +102,10 @@ export default function DealDetail({ initialDealData, onBack }) {
 		onBack(null); // set the current deal ID to null to go back to the deals list
 	};
 
+	const openDealUrl = () => {
+		Linking.openURL(deal.url);
+	};
+
 	return (
 		<View style={styles.deal}>
 			<TouchableOpacity onPress={handlePress}>
@@ -110,28 +116,29 @@ export default function DealDetail({ initialDealData, onBack }) {
 				source={{ uri: deal.media[imageIndex] }}
 				style={[styles.image, { left: imageXPos }]}
 			/>
+			<View>
+				<Text style={styles.title}>{deal.title}</Text>
+			</View>
 			<View style={styles.detail}>
-				<View>
-					<Text style={styles.title}>{deal.title}</Text>
-				</View>
 				<View style={styles.footer}>
 					<View style={styles.info}>
 						<Text style={styles.price}>{priceDisplay(deal.price)}</Text>
 						<Text style={styles.cause}>{deal.cause.name}</Text>
 					</View>
+					{deal.user && (
+						<View style={styles.user}>
+							<Image source={{ uri: deal.user.avatar }} style={styles.avatar} />
+							<Text>{deal.user.name}</Text>
+						</View>
+					)}
 				</View>
+				{deal.description && (
+					<View style={styles.description}>
+						<Text>{deal.description}</Text>
+					</View>
+				)}
+				<Button title="Buy this deal!" onPress={openDealUrl} />
 			</View>
-			{deal.user && (
-				<View style={styles.user}>
-					<Image source={{ uri: deal.user.avatar }} style={styles.avatar} />
-					<Text>{deal.user.name}</Text>
-				</View>
-			)}
-			{deal.description && (
-				<View style={styles.description}>
-					<Text>{deal.description}</Text>
-				</View>
-			)}
 		</View>
 	);
 }
