@@ -75,13 +75,10 @@ DealDetail.propTypes = {
 };
 
 const styles = StyleSheet.create({
-	deal: {
-		marginHorizontal: 12
-	},
-
 	backLink: {
 		marginBottom: 5,
-		color: "#22f"
+		color: "#22f",
+		marginLeft: 10
 	},
 
 	image: {
@@ -90,13 +87,9 @@ const styles = StyleSheet.create({
 		backgroundColor: "#ccc"
 	},
 
-	detail: {
-		borderColor: "#bbb",
-		borderWidth: 1
-	},
-
 	title: {
 		fontSize: 16,
+		padding: 10,
 		fontWeight: "bold",
 		backgroundColor: "rgba(237, 149, 45, 0.4)"
 	},
