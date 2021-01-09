@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import { Animated, Dimensions, Easing, StyleSheet, Text, View } from "react-native";
 
 import ajax from "../ajax";
 import DealList from "./DealList";
@@ -15,21 +15,29 @@ export default function App() {
 
 	// Spring back and forth from x = -100 to 100
 	const animateTitle = (direction=1) => {
-		Animated.spring(
-			titleXPos, // what to animate
-			{ toValue: direction * 100 } // the configuration object
-		).start(() => {
-			animateTitle(-1 * direction); // invoked after the previous animation is done
+		// Get the width of the screen (minus the width of bakesale)
+		const width = Dimensions.get("window").width - 150;
+		// (what to animate, the configuration object)
+		Animated.timing(titleXPos, {
+			toValue: direction * (width / 2),
+			duration: 1000,
+			easing: Easing.ease // accelerate to the edge
+		}).start(({ finished }) => {
+			// Invoked after the previous animation is done
+			if (finished) {
+				animateTitle(-1 * direction);
+			} // stop the infinite loop once the deals are fetched
 		});
 	};
 
 	useEffect(() => {
 		animateTitle();
+
 		// Fetch all the deals from the bakesaleforgood API
-		// (async () => {
-		// 	const fetchedDeals = await ajax.fetchInitialDeals();
-		// 	setDeals(fetchedDeals);
-		// })();
+		(async () => {
+			const fetchedDeals = await ajax.fetchInitialDeals();
+			setDeals(fetchedDeals);
+		})();
 	}, []);
 
 	const searchDeals = async searchTerm => {
