@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { Animated, StyleSheet, Text, View } from "react-native";
 
 import ajax from "../ajax";
 import DealList from "./DealList";
@@ -10,12 +10,26 @@ export default function App() {
 	const [deals, setDeals] = useState([]);
 	const [dealsFromSearch, setDealsFromSearch] = useState([]);
 	const [currentDealId, setCurrentDealId] = useState(null);
+	// Start animation at x (relative) position 0
+	const titleXPos = useRef(new Animated.Value(0)).current;
+
+	// Spring back and forth from x = -100 to 100
+	const animateTitle = (direction=1) => {
+		Animated.spring(
+			titleXPos, // what to animate
+			{ toValue: direction * 100 } // the configuration object
+		).start(() => {
+			animateTitle(-1 * direction); // invoked after the previous animation is done
+		});
+	};
 
 	useEffect(() => {
-		(async () => {
-			const fetchedDeals = await ajax.fetchInitialDeals();
-			setDeals(fetchedDeals);
-		})();
+		animateTitle();
+		// Fetch all the deals from the bakesaleforgood API
+		// (async () => {
+		// 	const fetchedDeals = await ajax.fetchInitialDeals();
+		// 	setDeals(fetchedDeals);
+		// })();
 	}, []);
 
 	const searchDeals = async searchTerm => {
@@ -54,7 +68,11 @@ export default function App() {
 			</View>
 		);
 	} else {
-		return <Text style={styles.header}>Bakesale</Text>;
+		return (
+			<Animated.View style={[styles.container, { left: titleXPos }]}>
+				<Text style={styles.header}>Bakesale</Text>
+			</Animated.View>
+		);
 	}
 }
 
