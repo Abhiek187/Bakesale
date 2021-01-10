@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
 	},
 
 	detail: {
-		height: "70%"
+		marginTop: "auto"
 	},
 
 	footer: {
