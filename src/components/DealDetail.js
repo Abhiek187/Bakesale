@@ -180,6 +180,10 @@ const styles = StyleSheet.create({
 		backgroundColor: "rgba(237, 149, 45, 0.4)"
 	},
 
+	detail: {
+		height: "70%"
+	},
+
 	footer: {
 		flexDirection: "row",
 		justifyContent: "space-around",
