@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Animated, Dimensions, Easing, StyleSheet, Text, View } from "react-native";
+import {
+	Animated,
+	Dimensions,
+	Easing,
+	Platform,
+	SafeAreaView,
+	StatusBar,
+	StyleSheet,
+	Text,
+	View
+} from "react-native";
 
 import ajax from "../ajax";
 import DealList from "./DealList";
@@ -22,7 +32,8 @@ export default function App() {
 		Animated.timing(titleXPos, {
 			toValue: direction * (width / 2),
 			duration: 1000,
-			easing: Easing.ease // accelerate to the edge
+			easing: Easing.ease, // accelerate to the edge
+			useNativeDriver: false
 		}).start(({ finished }) => {
 			// Invoked after the previous animation is done
 			if (finished) {
@@ -62,7 +73,15 @@ export default function App() {
 		: deals;
 
 	if (currentDealId) {
-		return (
+		// Avoid the notch on iOS
+		return Platform.OS === "ios" ? (
+			<SafeAreaView style={styles.main}>
+				<DealDetail
+					initialDealData={currentDeal()}
+					onBack={setCurrentDealId}
+				/>
+			</SafeAreaView>
+		) : (
 			<View style={styles.main}>
 				<DealDetail
 					initialDealData={currentDeal()}
@@ -71,7 +90,12 @@ export default function App() {
 			</View>
 		);
 	} else if (dealsToDisplay.length > 0) {
-		return (
+		return Platform.OS === "ios" ? (
+			<SafeAreaView style={styles.main}>
+				<SearchBar searchDeals={searchDeals} initialSearchTerm={activeSearchTerm} />
+				<DealList deals={dealsToDisplay} onItemPress={setCurrentDealId} />
+			</SafeAreaView>
+		) : (
 			<View style={styles.main}>
 				<SearchBar searchDeals={searchDeals} initialSearchTerm={activeSearchTerm} />
 				<DealList deals={dealsToDisplay} onItemPress={setCurrentDealId} />
@@ -95,7 +119,9 @@ const styles = StyleSheet.create({
 	},
 
 	main: {
-		marginTop: 30
+		marginTop: 30,
+		// Avoid the notch on Android
+		paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
 	},
 
 	header: {

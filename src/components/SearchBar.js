@@ -11,7 +11,10 @@ export default function SearchBar({ searchDeals, initialSearchTerm }) {
 	const searchDealsAndBlur = term => {
 		// Remove focus (hide the keyboard) after searching
 		searchDeals(term);
-		inputElement.current.blur();
+
+		if (inputElement) {
+			inputElement.current.blur();
+		}
 	};
 
 	const debouncedSearchDeals = useRef(debounce(searchDealsAndBlur, 300));

@@ -45,7 +45,8 @@ export default function DealDetail({ initialDealData, onBack }) {
 		if (!deal.media[imageIndex + indexDirection]) {
 			// No more images to swipe through
 			Animated.spring(imageXPos, {
-				toValue: 0
+				toValue: 0,
+				useNativeDriver: false
 			}).start();
 			return;
 		}
@@ -70,7 +71,8 @@ export default function DealDetail({ initialDealData, onBack }) {
 
 				Animated.timing(imageXPos, {
 					toValue: direction * width,
-					duration: 250
+					duration: 250,
+					useNativeDriver: false
 				}).start(() => {
 					// Move the image back or place a new image in the opposite direction of the swipe
 					handleSwipe(-1 * direction);
@@ -78,7 +80,8 @@ export default function DealDetail({ initialDealData, onBack }) {
 			} else {
 				// The image didn't move far enough, so put it back in its original position
 				Animated.spring(imageXPos, {
-					toValue: 0
+					toValue: 0,
+					useNativeDriver: false
 				}).start();
 			}
 		}
@@ -95,7 +98,8 @@ export default function DealDetail({ initialDealData, onBack }) {
 		// Next image animation
 		imageXPos.setValue(imageDirection.current * width);
 		Animated.spring(imageXPos, {
-			toValue: 0
+			toValue: 0,
+			useNativeDriver: false
 		}).start();
 	}, [imageIndex]);
 
@@ -157,7 +161,8 @@ const styles = StyleSheet.create({
 	backLink: {
 		marginBottom: 5,
 		color: "#22f",
-		marginLeft: 10
+		marginLeft: 10,
+		fontSize: 16
 	},
 
 	image: {
