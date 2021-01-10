@@ -142,7 +142,9 @@ export default function DealDetail({ initialDealData, onBack }) {
 						<Text>{deal.description}</Text>
 					</View>
 				)}
-				<Button title="Buy this deal!" onPress={openDealUrl} />
+				<View style={styles.button}>
+					<Button title="Buy this deal!" onPress={openDealUrl} />
+				</View>
 			</ScrollView>
 		</View>
 	);
@@ -214,5 +216,9 @@ const styles = StyleSheet.create({
 		borderStyle: "dotted",
 		margin: 10,
 		padding: 10
+	},
+
+	button: {
+		alignSelf: "center" // fit the button to the width of the text
 	}
 });

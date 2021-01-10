@@ -40,8 +40,7 @@ DealItem.propTypes = {
 
 const styles = StyleSheet.create({
 	deal: {
-		marginHorizontal: 12,
-		marginTop: 12
+		margin: 12
 	},
 
 	image: {
