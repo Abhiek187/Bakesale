@@ -7,6 +7,7 @@ import {
 	Image,
 	Linking,
 	PanResponder,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -119,7 +120,7 @@ export default function DealDetail({ initialDealData, onBack }) {
 			<View>
 				<Text style={styles.title}>{deal.title}</Text>
 			</View>
-			<View style={styles.detail}>
+			<ScrollView style={styles.detail}>
 				<View style={styles.footer}>
 					<View style={styles.info}>
 						<Text style={styles.price}>{priceDisplay(deal.price)}</Text>
@@ -138,7 +139,7 @@ export default function DealDetail({ initialDealData, onBack }) {
 					</View>
 				)}
 				<Button title="Buy this deal!" onPress={openDealUrl} />
-			</View>
+			</ScrollView>
 		</View>
 	);
 }
@@ -149,6 +150,10 @@ DealDetail.propTypes = {
 };
 
 const styles = StyleSheet.create({
+	deal: {
+		marginBottom: 20
+	},
+
 	backLink: {
 		marginBottom: 5,
 		color: "#22f",

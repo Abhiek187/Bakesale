@@ -10,6 +10,7 @@ export default function App() {
 	const [deals, setDeals] = useState([]);
 	const [dealsFromSearch, setDealsFromSearch] = useState([]);
 	const [currentDealId, setCurrentDealId] = useState(null);
+	const [activeSearchTerm, setActiveSearchTerm] = useState("");
 	// Start animation at x (relative) position 0
 	const titleXPos = useRef(new Animated.Value(0)).current;
 
@@ -49,6 +50,7 @@ export default function App() {
 		}
 
 		setDealsFromSearch(fetchedDealsFromSearch);
+		setActiveSearchTerm(searchTerm);
 	};
 
 	const currentDeal = () =>
@@ -71,7 +73,7 @@ export default function App() {
 	} else if (dealsToDisplay.length > 0) {
 		return (
 			<View style={styles.main}>
-				<SearchBar searchDeals={searchDeals} />
+				<SearchBar searchDeals={searchDeals} initialSearchTerm={activeSearchTerm} />
 				<DealList deals={dealsToDisplay} onItemPress={setCurrentDealId} />
 			</View>
 		);

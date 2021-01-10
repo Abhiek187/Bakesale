@@ -3,12 +3,25 @@ import PropTypes from "prop-types";
 import { StyleSheet, TextInput } from "react-native";
 import debounce from "lodash.debounce";
 
-export default function SearchBar({ searchDeals }) {
-	const [searchTerm, setSearchTerm] = useState("");
-	const debouncedSearchDeals = useRef(debounce(searchDeals, 300));
-	const isMounted = useRef(true);
+export default function SearchBar({ searchDeals, initialSearchTerm }) {
+	const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+	const isMounted = useRef(false);
+	const inputElement = useRef(null);
+
+	const searchDealsAndBlur = term => {
+		// Remove focus (hide the keyboard) after searching
+		searchDeals(term);
+		inputElement.current.blur();
+	};
+
+	const debouncedSearchDeals = useRef(debounce(searchDealsAndBlur, 300));
 
 	useEffect(() => {
+		// Only invoke componentDidUpdate()
+		if (!isMounted.current) {
+			isMounted.current = true;
+		}
+
 		// Don't re-render after every character update (wait 300 ms)
 		debouncedSearchDeals.current(searchTerm);
 
@@ -24,8 +37,14 @@ export default function SearchBar({ searchDeals }) {
 		}
 	};
 
+	const exposeInputElement = element => {
+		inputElement.current = element;
+	};
+
 	return (
 		<TextInput
+			ref={exposeInputElement}
+			value={searchTerm}
 			placeholder="Search All Deals"
 			style={styles.input}
 			onChangeText={handleChange}
@@ -34,7 +53,8 @@ export default function SearchBar({ searchDeals }) {
 }
 
 SearchBar.propTypes = {
-	searchDeals: PropTypes.func.isRequired
+	searchDeals: PropTypes.func.isRequired,
+	initialSearchTerm: PropTypes.string.isRequired
 };
 
 const styles = StyleSheet.create({
