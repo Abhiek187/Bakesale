@@ -17,7 +17,7 @@ import {
 import { priceDisplay } from "../util";
 import ajax from "../ajax";
 
-export default function DealDetail({ initialDealData, onBack }) {
+export default function DealDetail({ initialDealData, initialDirection, onBack }) {
 	/* Full deal contains:
 	 * availableQuantity: number,
 	 * cause: {name: string},
@@ -39,7 +39,8 @@ export default function DealDetail({ initialDealData, onBack }) {
 	const [imageIndex, setImageIndex] = useState(0);
 	const imageXPos = useRef(new Animated.Value(0)).current;
 	const width = useRef(Dimensions.get("window").width).current;
-	const imageDirection = useRef(1);
+	// Animate the image the same way as the parent view
+	const imageDirection = useRef(initialDirection);
 
 	const handleSwipe = indexDirection => {
 		if (!deal.media[imageIndex + indexDirection]) {
@@ -152,6 +153,7 @@ export default function DealDetail({ initialDealData, onBack }) {
 
 DealDetail.propTypes = {
 	initialDealData: PropTypes.object.isRequired,
+	initialDirection: PropTypes.number.isRequired,
 	onBack: PropTypes.func.isRequired
 };
 

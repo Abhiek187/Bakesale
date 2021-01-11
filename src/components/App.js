@@ -3,6 +3,7 @@ import {
 	Animated,
 	Dimensions,
 	Easing,
+	PanResponder,
 	Platform,
 	SafeAreaView,
 	StatusBar,
@@ -23,14 +24,17 @@ export default function App() {
 	const [activeSearchTerm, setActiveSearchTerm] = useState("");
 	// Start animation at x (relative) position 0
 	const titleXPos = useRef(new Animated.Value(0)).current;
+	const viewXPos = useRef(new Animated.Value(0)).current;
+	const width = useRef(Dimensions.get("window").width).current;
+	const dealDirection = useRef(1);
 
 	// Spring back and forth from x = -100 to 100
 	const animateTitle = (direction=1) => {
 		// Get the width of the screen (minus the width of bakesale)
-		const width = Dimensions.get("window").width - 150;
+		const reducedWidth = width - 150;
 		// (what to animate, the configuration object)
 		Animated.timing(titleXPos, {
-			toValue: direction * (width / 2),
+			toValue: direction * (reducedWidth / 2),
 			duration: 1000,
 			easing: Easing.ease, // accelerate to the edge
 			useNativeDriver: false
@@ -42,6 +46,61 @@ export default function App() {
 		});
 	};
 
+	const currentDealIndex = () =>
+		deals.findIndex(deal => deal.key === currentDealId);
+
+	const handleSwipe = indexDirection => {
+		const nextDeal = deals[currentDealIndex() + indexDirection];
+
+		if (!nextDeal) {
+			// No more deals to swipe through
+			Animated.spring(viewXPos, {
+				toValue: 0,
+				useNativeDriver: false
+			}).start();
+			return;
+		}
+
+		dealDirection.current = indexDirection;
+		setCurrentDealId(nextDeal.key);
+	};
+
+	const viewPanResponder = PanResponder.create({
+		// Let the movement determine whether the Pan Responder is active
+		onStartShouldSetPanResponder: () => false,
+		// If true, slide the deals; else, activate the ScrollView and slide the images
+		onMoveShouldSetPanResponder: (evt, gs) => {
+			return gs.moveY > 250 && (Math.abs(gs.dx) > Math.abs(gs.dy * 3));
+		},
+		// Detect gesture movement (evt = event, gs = gesture state)
+		onPanResponderMove: (evt, gs) => {
+			// Set the x position of the view to the distance traveled by the gesture
+			viewXPos.setValue(gs.dx);
+		},
+		// When the finger is released
+		onPanResponderRelease: (evt, gs) => {
+			if (Math.abs(gs.dx) > 0.4 * width) {
+				// Swipe the view left or right
+				const direction = Math.sign(gs.dx); // -1 or 1
+
+				Animated.timing(viewXPos, {
+					toValue: direction * width,
+					duration: 250,
+					useNativeDriver: false
+				}).start(() => {
+					// Move the view back or place a new deal in the opposite direction of the swipe
+					handleSwipe(-1 * direction);
+				});
+			} else {
+				// The view didn't move far enough, so put it back in its original position
+				Animated.spring(viewXPos, {
+					toValue: 0,
+					useNativeDriver: false
+				}).start();
+			}
+		}
+	});
+
 	useEffect(() => {
 		animateTitle();
 
@@ -51,6 +110,15 @@ export default function App() {
 			setDeals(fetchedDeals);
 		})();
 	}, []);
+
+	useEffect(() => {
+		// Next deal animation
+		viewXPos.setValue(dealDirection.current * width);
+		Animated.spring(viewXPos, {
+			toValue: 0,
+			useNativeDriver: false
+		}).start();
+	}, [currentDealId]);
 
 	const searchDeals = async searchTerm => {
 		// Default if the search bar is empty
@@ -75,19 +143,32 @@ export default function App() {
 	if (currentDealId) {
 		// Avoid the notch on iOS
 		return Platform.OS === "ios" ? (
-			<SafeAreaView style={styles.main}>
-				<DealDetail
-					initialDealData={currentDeal()}
-					onBack={setCurrentDealId}
-				/>
+			<SafeAreaView>
+				<Animated.View
+					{...viewPanResponder.panHandlers}
+					style={[styles.main, { left: viewXPos }]}
+				>
+					{/* The key prop forces DealDetail to re-render whenever the deal ID changes */}
+					<DealDetail
+						key={currentDealId}
+						initialDealData={currentDeal()}
+						initialDirection={dealDirection.current}
+						onBack={setCurrentDealId}
+					/>
+				</Animated.View>
 			</SafeAreaView>
 		) : (
-			<View style={styles.main}>
+			<Animated.View
+				{...viewPanResponder.panHandlers}
+				style={[styles.main, { left: viewXPos }]}
+			>
 				<DealDetail
+					key={currentDealId}
 					initialDealData={currentDeal()}
+					initialDirection={dealDirection.current}
 					onBack={setCurrentDealId}
 				/>
-			</View>
+			</Animated.View>
 		);
 	} else if (dealsToDisplay.length > 0) {
 		return Platform.OS === "ios" ? (
