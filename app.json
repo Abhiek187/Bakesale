@@ -2,12 +2,12 @@
   "expo": {
     "name": "Bakesale",
     "entryPoint": "index.js",
-    "slug": "Bakesale",
+    "slug": "bakesale",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/bakesale-logo.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/bakesale-splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,13 +18,17 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": "1.0.0",
+      "bundleIdentifier": "com.example.bakesale",
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.example.bakesale",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
