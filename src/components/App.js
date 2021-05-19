@@ -47,9 +47,9 @@ export default function App() {
 	};
 
 	const currentDealIndex = () =>
-		deals.findIndex(deal => deal.key === currentDealId);
+		deals.findIndex((deal) => deal.key === currentDealId);
 
-	const handleSwipe = indexDirection => {
+	const handleSwipe = (indexDirection) => {
 		const nextDeal = deals[currentDealIndex() + indexDirection];
 
 		if (!nextDeal) {
@@ -120,7 +120,7 @@ export default function App() {
 		}).start();
 	}, [currentDealId]);
 
-	const searchDeals = async searchTerm => {
+	const searchDeals = async (searchTerm) => {
 		// Default if the search bar is empty
 		let fetchedDealsFromSearch = [];
 
@@ -133,7 +133,7 @@ export default function App() {
 	};
 
 	const currentDeal = () =>
-		deals.find(deal => deal.key === currentDealId);
+		deals.find((deal) => deal.key === currentDealId);
 
 	// If not searching for anything, display all the deals
 	const dealsToDisplay = dealsFromSearch.length > 0
@@ -194,9 +194,9 @@ export default function App() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#fff',
-		alignItems: 'center',
-		justifyContent: 'center'
+		backgroundColor: "#fff",
+		alignItems: "center",
+		justifyContent: "center"
 	},
 
 	main: {

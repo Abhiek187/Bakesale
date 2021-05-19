@@ -8,7 +8,7 @@ export default function SearchBar({ searchDeals, initialSearchTerm }) {
 	const isMounted = useRef(false);
 	const inputElement = useRef(null);
 
-	const searchDealsAndBlur = term => {
+	const searchDealsAndBlur = (term) => {
 		// Remove focus (hide the keyboard) after searching
 		searchDeals(term);
 
@@ -33,14 +33,14 @@ export default function SearchBar({ searchDeals, initialSearchTerm }) {
 		};
 	}, [searchTerm]);
 
-	const handleChange = term => {
+	const handleChange = (term) => {
 		// Only perform a state change while the component is still mounted
 		if (isMounted.current) {
 			setSearchTerm(term);
 		}
 	};
 
-	const exposeInputElement = element => {
+	const exposeInputElement = (element) => {
 		inputElement.current = element;
 	};
 

@@ -1,2 +1,2 @@
-export const priceDisplay = priceInCents =>
+export const priceDisplay = (priceInCents) =>
 	`$${priceInCents / 100}`;

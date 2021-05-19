@@ -42,7 +42,7 @@ export default function DealDetail({ initialDealData, initialDirection, onBack }
 	// Animate the image the same way as the parent view
 	const imageDirection = useRef(initialDirection);
 
-	const handleSwipe = indexDirection => {
+	const handleSwipe = (indexDirection) => {
 		if (!deal.media[imageIndex + indexDirection]) {
 			// No more images to swipe through
 			Animated.spring(imageXPos, {
